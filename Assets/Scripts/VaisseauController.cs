@@ -11,6 +11,7 @@ public class VaisseauController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
     }
 
     // Update is called once per frame
@@ -48,7 +49,7 @@ public class VaisseauController : MonoBehaviour
         if(other.tag == "Gravity")
         {
             GetComponent<PlayerGravityBody>().enabled = false;
-            Debug.Log("EXIT");
+            //Debug.Log("EXIT");
         }    
     }
 
@@ -58,7 +59,7 @@ public class VaisseauController : MonoBehaviour
         {          
             GetComponent<PlayerGravityBody>().attractorPlanet = other.GetComponent<GravityEnter>().planet.GetComponent<PlanetScript>();
             GetComponent<PlayerGravityBody>().enabled = true;
-            Debug.Log("ENTER");
+            //Debug.Log("ENTER");
         }
     }
 
