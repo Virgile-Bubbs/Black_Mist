@@ -55,9 +55,12 @@ public class VaisseauController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(other.tag == "Gravity")
-        {
+        {          
+            GetComponent<PlayerGravityBody>().attractorPlanet = other.GetComponent<GravityEnter>().planet.GetComponent<PlanetScript>();
             GetComponent<PlayerGravityBody>().enabled = true;
             Debug.Log("ENTER");
         }
     }
+
+    
 }
