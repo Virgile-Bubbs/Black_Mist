@@ -5,18 +5,26 @@ using UnityEngine;
 public class VaisseauController : MonoBehaviour
 {
     private Rigidbody rb;
-
     public float speed;
+
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
+
+    public bool isGrounded;
+
+    
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-
     }
 
     // Update is called once per frame
     void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             rb.AddForce(transform.up * speed * Time.deltaTime);

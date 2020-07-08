@@ -18,7 +18,7 @@ public class PlayerAction : MonoBehaviour
         if(!inVaisseau)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.forward, out hit))
+            if (Physics.Raycast(transform.position, transform.forward, out hit, 2.0f))
             {
                 if (hit.collider.tag == "Vaisseau")
                 {
@@ -34,21 +34,21 @@ public class PlayerAction : MonoBehaviour
 
         else
         {
-            if (Input.GetKey(KeyCode.Escape))
+            transform.position = vaisseau.transform.position;
+            if(vaisseau.GetComponent<VaisseauController>().isGrounded)
             {
-                ExitVaisseau();
-            }
-        }
-
-        //Debug.Log(inVaisseau);
-        
+                if (Input.GetKey(KeyCode.A))
+                {
+                    ExitVaisseau();
+                }
+            }         
+        }     
     }
 
     void EnterVaisseau()
     {
         inVaisseau = true;
         transform.position = vaisseau.transform.position;
-        transform.SetParent(vaisseau.transform);
         vaisseau.GetComponent<VaisseauController>().enabled = true;
         vaisseau.transform.GetChild(0).gameObject.SetActive(true);
         for(int i=0; i<transform.childCount; i++)
@@ -56,12 +56,12 @@ public class PlayerAction : MonoBehaviour
             transform.GetChild(i).gameObject.SetActive(false);
         }
         GetComponent<PlayerMovementScript>().enabled = false;
+        GetComponent<CapsuleCollider>().enabled = false;
     }
 
     void ExitVaisseau()
     {
         inVaisseau = false;
-        transform.SetParent(null);
         transform.position = vaisseau.transform.position + new Vector3(2, 0, 0);
         vaisseau.GetComponent<VaisseauController>().enabled = false;
         vaisseau.transform.GetChild(0).gameObject.SetActive(false);
@@ -70,5 +70,7 @@ public class PlayerAction : MonoBehaviour
             transform.GetChild(i).gameObject.SetActive(true);
         }
         GetComponent<PlayerMovementScript>().enabled = true;
+        GetComponent<CapsuleCollider>().enabled = true;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 }
