@@ -30,29 +30,38 @@ public class PlayerMovementScript : MonoBehaviour {
            
     }
 
-    void FixedUpdate()
+
+    public void Avance()
     {
-        if (Input.GetKey(KeyCode.Z))
-            rb.MovePosition(rb.position + transform.TransformDirection(moveVertical) * moveSpeed * Time.deltaTime);
-        if (Input.GetKey(KeyCode.S))
-            rb.MovePosition(rb.position + transform.TransformDirection(moveVertical) * (moveSpeed/2) * Time.deltaTime);
-        if (Input.GetKey(KeyCode.Q))
-            rb.MovePosition(rb.position + transform.TransformDirection(moveHorizontal) * moveSpeed * Time.deltaTime);    
-        if (Input.GetKey(KeyCode.D))
-            rb.MovePosition(rb.position + transform.TransformDirection(moveHorizontal) * moveSpeed * Time.deltaTime);
+        rb.MovePosition(rb.position + transform.TransformDirection(moveVertical) * moveSpeed * Time.deltaTime);
+    }
 
-        if (Input.GetKey(KeyCode.Space) && isGrounded)
-        {
+    public void Recule()
+    {
+        rb.MovePosition(rb.position + transform.TransformDirection(moveVertical) * (moveSpeed / 2) * Time.deltaTime);
+    }
+
+    public void Droite()
+    {
+        rb.MovePosition(rb.position + transform.TransformDirection(moveHorizontal) * moveSpeed * Time.deltaTime);
+    }
+
+    public void Gauche()
+    {
+        rb.MovePosition(rb.position + transform.TransformDirection(moveHorizontal) * moveSpeed * Time.deltaTime);
+    }
+
+    public void Jump()
+    {
+        if(isGrounded)
             rb.AddForce(transform.up * jumpForce);
-        }
-
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.tag == "Gravity")
         {
-            GetComponent<PlayerGravityBody>().enabled = false;
+            GetComponent<GravityBody>().enabled = false;
             //Debug.Log("EXIT");
         }
     }
@@ -61,8 +70,8 @@ public class PlayerMovementScript : MonoBehaviour {
     {
         if (other.tag == "Gravity")
         {
-            GetComponent<PlayerGravityBody>().attractorPlanet = other.GetComponent<GravityEnter>().planet.GetComponent<PlanetScript>();
-            GetComponent<PlayerGravityBody>().enabled = true;
+            GetComponent<GravityBody>().attractorPlanet = other.GetComponent<GravityEnter>().planet.GetComponent<PlanetScript>();
+            GetComponent<GravityBody>().enabled = true;
             //Debug.Log("ENTER");
         }
     }

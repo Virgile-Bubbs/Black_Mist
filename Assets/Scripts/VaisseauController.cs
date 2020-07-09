@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VaisseauController : MonoBehaviour
+public class VaisseauController : Actionable
 {
+    public GameObject player;
+    public Actions actions;
+
     private Rigidbody rb;
     public float speed;
 
@@ -11,52 +14,123 @@ public class VaisseauController : MonoBehaviour
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
-    public bool isGrounded;
+    private bool isGrounded;
+    private bool isPlayerIn;
 
     
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        isPlayerIn = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        actions.SetPlayerIn(isPlayerIn);
 
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            rb.AddForce(transform.up * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            rb.AddForce(-transform.up * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.Z))
-        {
-            rb.AddForce(transform.forward * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            rb.AddForce(-transform.forward * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            rb.AddForce(-transform.right * speed * Time.deltaTime);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            rb.AddForce(transform.right * speed * Time.deltaTime);
-        }
-            
+        if (isPlayerIn)
+            player.transform.position = transform.position;
     }
+
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+
+    public void SetIsGrounded(bool state)
+    {
+        isGrounded = state;
+    }
+
+    public bool IsPlayerIn()
+    {
+        return isPlayerIn;
+    }
+
+    public void SetIsPlayerIn(bool state)
+    {
+        isPlayerIn = state;
+    }
+
+    public override void Execute()
+    {
+        if (!isPlayerIn)
+            EnterVaisseau();
+    }
+
+    public void Monte()
+    {
+        rb.AddForce(transform.up * speed * Time.deltaTime);
+    }
+
+    public void Descend()
+    {
+        rb.AddForce(-transform.up * speed * Time.deltaTime);
+    }
+
+    public void Avance()
+    {
+        if(!isGrounded)
+            rb.AddForce(transform.forward * speed * Time.deltaTime);
+    }
+
+    public void Recule()
+    {
+        if(!isGrounded)
+            rb.AddForce(-transform.forward * speed * Time.deltaTime);
+    }
+
+    public void Droite()
+    {
+        if(!isGrounded)
+            rb.AddForce(transform.right * speed * Time.deltaTime);
+    }
+
+    public void Gauche()
+    {
+        if(!isGrounded)
+            rb.AddForce(-transform.right * speed * Time.deltaTime);
+    }
+
+    public void EnterVaisseau()
+    {
+        player.transform.position = transform.position;
+        transform.GetChild(0).gameObject.SetActive(true);
+        for (int i = 0; i < player.transform.childCount; i++)
+        {
+            player.transform.GetChild(i).gameObject.SetActive(false);
+        }
+
+        player.GetComponent<CapsuleCollider>().enabled = false;
+
+        isPlayerIn = true;
+    }
+
+    public void ExitVaisseau()
+    {
+        player.transform.position = transform.position + new Vector3(2, 0, 0);
+        transform.GetChild(0).gameObject.SetActive(false);
+        for (int i = 0; i < player.transform.childCount; i++)
+        {
+            player.transform.GetChild(i).gameObject.SetActive(true);
+        }
+
+        player.GetComponent<CapsuleCollider>().enabled = true;
+        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
+        isPlayerIn = false;
+    }
+
+   
 
     private void OnTriggerExit(Collider other)
     {
         if(other.tag == "Gravity")
         {
-            GetComponent<PlayerGravityBody>().enabled = false;
+            GetComponent<GravityBody>().enabled = false;
             //Debug.Log("EXIT");
         }    
     }
@@ -65,8 +139,8 @@ public class VaisseauController : MonoBehaviour
     {
         if(other.tag == "Gravity")
         {          
-            GetComponent<PlayerGravityBody>().attractorPlanet = other.GetComponent<GravityEnter>().planet.GetComponent<PlanetScript>();
-            GetComponent<PlayerGravityBody>().enabled = true;
+            GetComponent<GravityBody>().attractorPlanet = other.GetComponent<GravityEnter>().planet.GetComponent<PlanetScript>();
+            GetComponent<GravityBody>().enabled = true;
             //Debug.Log("ENTER");
         }
     }
