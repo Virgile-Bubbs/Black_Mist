@@ -1,20 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerAction : MonoBehaviour
 {
     public GameObject vaisseau;
     private bool inVaisseau;
 
+    public Canvas canvas;
+
+    public GameObject actionUI;
+    public Sprite img_monter;
+    private GameObject ui;
+
+    bool isShowing;
+
     private void Start()
     {
         inVaisseau = false;
+        isShowing = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(isShowing);
         if(!inVaisseau)
         {
             RaycastHit hit;
@@ -22,18 +34,37 @@ public class PlayerAction : MonoBehaviour
             {
                 if (hit.collider.tag == "Vaisseau")
                 {
-                    Debug.Log("HIT VAISSEAU");
+                    if(!isShowing)
+                        ShowActionUI(img_monter, "Monter");
 
                     if (Input.GetKey(KeyCode.E))
                     {
                         EnterVaisseau();
                     }
                 }
+                
+            }
+
+            else
+            {
+                if (isShowing)
+                {
+                    Destroy(ui);
+                    isShowing = false;
+                }
             }
         }
 
         else
         {
+            
+            if (isShowing)
+            {
+                 Destroy(ui);
+                 isShowing = false;
+            }
+     
+
             transform.position = vaisseau.transform.position;
             if(vaisseau.GetComponent<VaisseauController>().isGrounded)
             {
@@ -72,5 +103,13 @@ public class PlayerAction : MonoBehaviour
         GetComponent<PlayerMovementScript>().enabled = true;
         GetComponent<CapsuleCollider>().enabled = true;
         GetComponent<Rigidbody>().velocity = Vector3.zero;
+    }
+
+    void ShowActionUI(Sprite img, string message)
+    {
+        ui = Instantiate(actionUI, canvas.transform) as GameObject;
+        ui.GetComponentInChildren<TextMeshProUGUI>().text = message;
+        ui.GetComponentInChildren<Image>().sprite = img;
+        isShowing = true;
     }
 }
