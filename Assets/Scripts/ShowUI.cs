@@ -10,13 +10,13 @@ public class ShowUI : MonoBehaviour
 
     public GameObject actionUI;
     public Sprite img_monter;
+    private GameObject actionMessage;
 
     private bool show;
 
     private void Start()
     {
-        show = false;
-        actionUI.SetActive(false);
+        SetIsShowing(true);
     }
 
     public bool IsShowing()
@@ -31,10 +31,11 @@ public class ShowUI : MonoBehaviour
 
     public void ShowMessage(Sprite img, string message)
     {
-        actionUI.SetActive(true);
-        actionUI.GetComponentInChildren<TextMeshProUGUI>().text = message;
-        actionUI.GetComponentInChildren<Image>().sprite = img;
+        actionMessage = Instantiate(actionUI, canvas.transform) as GameObject;
+        actionMessage.GetComponentInChildren<TextMeshProUGUI>().text = message;
+        actionMessage.GetComponentInChildren<Image>().sprite = img;
         SetIsShowing(true);
+        actionMessage.gameObject.SetActive(true);
     }
 
     public void ShowMessageDescendre()
@@ -53,7 +54,7 @@ public class ShowUI : MonoBehaviour
 
     public void HideMessage()
     {
-        actionUI.SetActive(false);
+        Destroy(actionMessage);
         SetIsShowing(false);
     }
 }

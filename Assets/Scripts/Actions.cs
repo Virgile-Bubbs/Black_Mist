@@ -96,19 +96,11 @@ public class Actions : MonoBehaviour
        
         if (Physics.Raycast(player.transform.position, player.transform.forward, out hit, 2.0f))
         {
+            
             //Layer 11 is Actionable
             if (hit.collider.gameObject.layer == 11)
             {
-                isTargetingActionable = true;
-                currentActionable = hit.collider.gameObject.GetComponent<Actionable>();
-                
-                if(hit.collider.tag == "Vaisseau" && !ui.IsShowing())
-                {
-                    if (isPlayerIn && vaisseauController.IsGrounded())
-                        ui.ShowMessageDescendre();
-                    else if (!isPlayerIn && vaisseauController.IsGrounded())
-                        ui.ShowMessageMonter();
-                }
+                CanActionate(hit);
             }
             else
             {
@@ -129,6 +121,20 @@ public class Actions : MonoBehaviour
 
             isTargetingActionable = false;
             currentActionable = null;
+        }
+    }
+
+    private void CanActionate(RaycastHit hit)
+    {
+        isTargetingActionable = true;
+        currentActionable = hit.collider.gameObject.GetComponent<Actionable>();
+
+        if (hit.collider.tag == "Vaisseau" && !ui.IsShowing())
+        {
+            if (isPlayerIn && vaisseauController.IsGrounded())
+                ui.ShowMessageDescendre();
+            else if (!isPlayerIn && vaisseauController.IsGrounded())
+                ui.ShowMessageMonter();
         }
     }
 }
